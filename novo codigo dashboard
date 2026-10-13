@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Comercial | Rumo</title>
+
+<style>
+:root {
+  --azul:#082b4c;
+  --azul2:#124c78;
+  --dourado:#f5b900;
+  --fundo:#eef3f8;
+  --texto:#243447;
+  --cinza:#6c7a89;
+  --borda:#dce4ec;
+  --verde:#16835c;
+}
+* {box-sizing:border-box;margin:0;padding:0}
+body {
+  font-family:Arial,Helvetica,sans-serif;
+  background:var(--fundo);
+  color:var(--texto);
+  min-height:100vh;
+}
+header {
+  background:var(--azul);
+  color:white;
+  padding:18px 30px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+  border-bottom:5px solid var(--dourado);
+}
+header h1 {font-size:clamp(20px,2vw,30px);margin-bottom:5px}
+header p {color:#d4dfeb;font-size:14px}
+.relogio{text-align:right;white-space:nowrap}
+#hora{font-size:clamp(21px,2vw,30px);font-weight:bold}
+#data{font-size:13px;color:#d4dfeb;margin-top:4px}
+nav {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  padding:12px 25px;
+  background:white;
+  border-bottom:1px solid var(--borda);
+}
+button {
+  font-family:inherit;
+  cursor:pointer;
+}
+.botao-menu,.botao-carteira {
+  border:1px solid var(--borda);
+  border-radius:7px;
+  padding:11px 16px;
+  background:white;
+  color:var(--azul);
+  font-weight:bold;
+  font-size:14px;
+}
+.botao-menu.ativo,.botao-menu:hover {
+  background:var(--azul);
+  color:white;
+}
+main {padding:24px 30px;min-height:72vh}
+.tela {display:none}
+.tela.ativa {display:block;animation:aparecer .25s ease}
+@keyframes aparecer {
+  from {opacity:0;transform:translateY(4px)}
+  to {opacity:1;transform:translateY(0)}
+}
+.cabecalho-tela {margin-bottom:20px}
+.cabecalho-tela h2 {color:var(--azul);font-size:clamp(23px,2.2vw,32px);margin-bottom:7px}
+.subtitulo {color:var(--cinza);font-size:14px;line-height:1.5}
+.aviso {
+  display:inline-block;
+  margin-top:9px;
+  padding:6px 10px;
+  border-radius:5px;
+  background:#fff0c7;
+  color:#805b00;
+  font-size:11px;
+  font-weight:bold;
+}
+.botoes-carteira {
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+  margin-bottom:20px;
+}
+.botao-carteira {flex:1 1 120px}
+.botao-carteira.ativo {
+  background:var(--azul);
+  color:white;
+  border-color:var(--azul);
+  box-shadow:inset 0 -3px var(--dourado);
+}
+.grade-indicadores {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:18px;
+}
+.cartao-indicador,.painel,.cartao-mercado,.cartao-clima {
+  background:white;
+  border:1px solid var(--borda);
+  border-radius:11px;
+  box-shadow:0 3px 10px #082b4c0a;
+}
+.cartao-indicador {
+  padding:25px;
+  border-left:5px solid var(--dourado);
+}
+.indicador-nome {
+  color:var(--cinza);
+  font-size:13px;
+  font-weight:bold;
+}
+.indicador-valor {
+  color:var(--azul);
+  font-size:clamp(28px,3vw,44px);
+  font-weight:bold;
+  margin:12px 0;
+  overflow-wrap:anywhere;
+}
+.indicador-descricao {color:var(--cinza);font-size:12px}
+.grade-detalhes {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+  margin-top:20px;
+}
+.painel {padding:20px;min-width:0}
+.painel h3 {color:var(--azul);margin-bottom:10px}
+.tabela-container {overflow-x:auto;margin-top:12px}
+table {width:100%;border-collapse:collapse}
+th {
+  background:var(--azul);
+  color:white;
+  text-align:left;
+  padding:12px;
+  font-size:12px;
+}
+td {padding:12px;border-bottom:1px solid var(--borda);font-size:13px}
+.grafico {
+  display:flex;
+  justify-content:space-around;
+  align-items:flex-end;
+  gap:10px;
+  height:180px;
+  margin-top:20px;
+  border-bottom:1px solid var(--borda);
+}
+.coluna-grafico {
+  height:100%;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  align-items:center;
+  gap:8px;
+}
+.barra {
+  width:65%;
+  max-width:65px;
+  background:var(--azul2);
+  border-radius:5px 5px 0 0;
+  position:relative;
+}
+.barra.destaque {background:var(--dourado)}
+.valor-barra {
+  position:absolute;
+  top:-22px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:10px;
+  white-space:nowrap;
+}
+.mes-barra {font-size:11px;color:var(--cinza);padding-bottom:7px}
+.grade-mercado {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:18px;
+}
+.cartao-mercado {padding:23px;border-top:4px solid var(--dourado)}
+.cartao-mercado h3 {color:var(--azul);margin-bottom:10px}
+.cartao-mercado p {color:var(--cinza);font-size:14px;line-height:1.6}
+.etiqueta {
+  display:inline-block;
+  margin-top:12px;
+  padding:6px 9px;
+  background:#e8f0f7;
+  color:var(--azul);
+  border-radius:5px;
+  font-size:11px;
+}
+.grade-noticias {
+  display:grid;
+  grid-template-columns:1.2fr 1fr;
+  gap:18px;
+}
+.lista-noticias {list-style:none}
+.lista-noticias li {padding:15px 0;border-bottom:1px solid var(--borda)}
+.lista-noticias strong {display:block;color:var(--azul);margin-bottom:6px}
+.lista-noticias p {color:var(--cinza);font-size:13px;line-height:1.5}
+.aniversariante {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:13px 0;
+  border-bottom:1px solid var(--borda);
+}
+.avatar {
+  width:44px;height:44px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--azul);color:white;font-weight:bold;
+}
+.aniversariante strong {color:var(--azul);font-size:14px}
+.aniversariante p {color:var(--cinza);font-size:12px;margin-top:4px}
+.grade-clima {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:18px;
+}
+.cartao-clima {
+  background:linear-gradient(145deg,#082b4c,#124c78);
+  color:white;
+  padding:20px;
+  border-top:4px solid var(--dourado);
+  min-width:0;
+}
+.clima-cidade {font-size:clamp(15px,1.4vw,21px);font-weight:bold;min-height:40px}
+.clima-principal {
+  display:flex;justify-content:space-between;align-items:center;gap:10px;margin:12px 0;
+}
+.clima-temperatura {font-size:clamp(30px,3vw,44px);font-weight:bold}
+.clima-icone {font-size:38px}
+.clima-condicao {color:#d4dfeb;font-size:13px;margin-top:4px}
+.clima-minmax {color:#d4dfeb;font-size:12px;margin-top:10px}
+.clima-detalhes {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:13px;
+  border-top:1px solid #ffffff40;
+  padding-top:13px;
+  margin-top:13px;
+}
+.clima-detalhes span {display:block;color:#d4dfeb;font-size:11px;margin-bottom:5px}
+.clima-detalhes strong {font-size:15px}
+.status-clima {
+  background:white;border:1px solid var(--borda);border-radius:8px;
+  color:var(--cinza);font-size:12px;padding:12px;margin-top:16px;
+}
+footer {background:var(--azul);color:#d4dfeb;text-align:center;padding:13px;font-size:11px}
+@media(max-width:950px) {
+  .grade-clima,.grade-indicadores,.grade-mercado {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grade-detalhes,.grade-noticias {grid-template-columns:1fr}
+}
+@media(max-width:600px) {
+  header {flex-direction:column;align-items:flex-start}
+  .relogio {text-align:left}
+  main {padding:16px}
+  nav {padding:10px}
+  .grade-clima,.grade-indicadores,.grade-mercado {grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="marca">
+    <h1>Painel Comercial | Rumo</h1>
+    <p>Indicadores operacionais, mercado, notícias e clima</p>
+  </div>
+  <div class="relogio">
+    <div id="hora">--:--:--</div>
+    <div id="data">Carregando...</div>
+  </div>
+</header>
+
+<nav>
+  <button class="botao-menu ativo" onclick="mostrarTela('indicadores',this)">Indicadores</button>
+  <button class="botao-menu" onclick="mostrarTela('mercado',this)">Mercado</button>
+  <button class="botao-menu" onclick="mostrarTela('noticias',this)">Notícias e aniversariantes</button>
+  <button class="botao-menu" onclick="mostrarTela('clima',this)">Clima dos terminais</button>
+</nav>
+
+<main>
+
+<section class="tela ativa" id="indicadores">
+  <div class="cabecalho-tela">
+    <h2>Indicadores operacionais</h2>
+    <p class="subtitulo">Acompanhamento de TU, TKU e Carload por carteira.</p>
+    <span class="aviso">DADOS DE DEMONSTRAÇÃO — substituir por dados autorizados</span>
+  </div>
+
+  <div class="botoes-carteira">
+    <button class="botao-carteira ativo" onclick="selecionarCarteira(0,this)">Cimento</button>
+    <button class="botao-carteira" onclick="selecionarCarteira(1,this)">Fertilizantes</button>
+    <button class="botao-carteira" onclick="selecionarCarteira(2,this)">Grãos</button>
+    <button class="botao-carteira" onclick="selecionarCarteira(3,this)">Açúcar</button>
+    <button class="botao-carteira" onclick="selecionarCarteira(4,this)">Líquidos</button>
+    <button class="botao-carteira" onclick="selecionarCarteira(5,this)">Celulose</button>
+  </div>
+
+  <div class="grade-indicadores">
+    <article class="cartao-indicador">
+      <div class="indicador-nome">TU — TONELADAS ÚTEIS</div>
+      <div class="indicador-valor" id="indicadorTU">0</div>
+      <div class="indicador-descricao">Volume transportado</div>
+    </article>
+    <article class="cartao-indicador">
+      <div class="indicador-nome">TKU — TONELADAS POR KM ÚTIL</div>
+      <div class="indicador-valor" id="indicadorTKU">0</div>
+      <div class="indicador-descricao">Produção de transporte</div>
+    </article>
+    <article class="cartao-indicador">
+      <div class="indicador-nome">CARLOAD</div>
+      <div class="indicador-valor" id="indicadorCarload">0</div>
+      <div class="indicador-descricao">Quantidade de cargas</div>
+    </article>
+  </div>
+
+  <div class="grade-detalhes">
+    <section class="painel">
+      <h3>Resumo das carteiras</h3>
+      <p class="subtitulo">Valores demonstrativos por carteira.</p>
+      <div class="tabela-container">
+        <table>
+          <thead><tr><th>Carteira</th><th>TU</th><th>TKU</th><th>Carload</th></tr></thead>
+          <tbody id="tabelaResumo"></tbody>
+        </table>
+      </div>
+    </section>
+    <section class="painel">
+      <h3>Comparativo mensal de TU</h3>
+      <p class="subtitulo">Gráfico ilustrativo da carteira selecionada.</p>
+      <div class="grafico" id="graficoMensal"></div>
+      <p class="subtitulo" style="margin-top:12px">Os dados deste exemplo não são indicadores oficiais.</p>
+    </section>
+  </div>
+</section>
+
+<section class="tela" id="mercado">
+  <div class="cabecalho-tela">
+    <h2>Mercado</h2>
+    <p class="subtitulo">Espaço para acompanhar informações relevantes ao setor comercial e logístico.</p>
+  </div>
+  <div class="grade-mercado">
+    <article class="cartao-mercado">
+      <h3>Dólar</h3>
+      <p>Acompanhe a cotação do câmbio por uma fonte autorizada e atualizada.</p>
+      <span class="etiqueta">Consultar fonte atualizada</span>
+    </article>
+    <article class="cartao-mercado">
+      <h3>Soja</h3>
+      <p>Acompanhe cotações e notícias relevantes para o mercado de grãos.</p>
+      <span class="etiqueta">Consultar fonte atualizada</span>
+    </article>
+    <article class="cartao-mercado">
+      <h3>Logística e transporte</h3>
+      <p>Espaço para notícias sobre ferrovias, portos, terminais e movimentação de cargas.</p>
+      <span class="etiqueta">Adicionar notícias validadas</span>
+    </article>
+  </div>
+</section>
+
+<section class="tela" id="noticias">
+  <div class="cabecalho-tela">
+    <h2>Notícias e aniversariantes</h2>
+    <p class="subtitulo">Área para comunicações internas e datas comemorativas.</p>
+  </div>
+  <div class="grade-noticias">
+    <section class="painel">
+      <h3>Notícias e comunicados</h3>
+      <ul class="lista-noticias">
+        <li><strong>Comunicados internos</strong><p>Inclua comunicados aprovados pela equipe responsável.</p></li>
+        <li><strong>Operação e logística</strong><p>Inclua informações validadas sobre a operação.</p></li>
+        <li><strong>Segurança</strong><p>Inclua campanhas e lembretes corporativos autorizados.</p></li>
+      </ul>
+    </section>
+    <section class="painel">
+      <h3>Aniversariantes do mês</h3>
+      <p class="subtitulo">Adicione nomes e fotos somente com autorização.</p>
+      <div class="aniversariante">
+        <div class="avatar">🎂</div>
+        <div><strong>Espaço para aniversariante</strong><p>Nome e data</p></div>
+      </div>
+      <div class="aniversariante">
+        <div class="avatar">🎉</div>
+        <div><strong>Espaço para aniversariante</strong><p>Nome e data</p></div>
+      </div>
+    </section>
+  </div>
+</section>
+
+<section class="tela" id="clima">
+  <div class="cabecalho-tela">
+    <h2>Clima dos terminais e regiões</h2>
+    <p class="subtitulo">Condições meteorológicas atuais e previsão de chuva para as cidades acompanhadas.</p>
+  </div>
+
+  <div class="grade-clima" id="gradeClima"></div>
+
+  <div class="status-clima">
+    <span class="ponto-status"></span>
+    <span id="statusClima">Buscando informações meteorológicas...</span>
+  </div>
+  <p class="subtitulo" style="margin-top:10px">Fonte meteorológica: Open-Meteo. Requer conexão com a internet.</p>
+</section>
+
+</main>
+
+<footer>
+  Painel Comercial | Rumo — informações demonstrativas devem ser substituídas por fontes autorizadas.
+</footer>
+
+<script>
+const carteiras = [
+  {nome:"Cimento",tu:4442,tku:1280000,carload:148},
+  {nome:"Fertilizantes",tu:5200,tku:1420000,carload:172},
+  {nome:"Grãos",tu:8900,tku:2650000,carload:280},
+  {nome:"Açúcar",tu:6100,tku:1730000,carload:194},
+  {nome:"Líquidos",tu:3800,tku:960000,carload:120},
+  {nome:"Celulose",tu:7200,tku:2140000,carload:225}
+];
+
+const historicoTU = {
+  "Cimento":[3200,3700,4100,4442],
+  "Fertilizantes":[3900,4200,4800,5200],
+  "Grãos":[6500,7100,7900,8900],
+  "Açúcar":[4500,5000,5700,6100],
+  "Líquidos":[3000,3200,3500,3800],
+  "Celulose":[5400,6100,6800,7200]
+};
+
+function formatarNumero(valor) {
+  return Number(valor).toLocaleString("pt-BR");
+}
+
+function selecionarCarteira(indice,botao) {
+  const carteira = carteiras[indice];
+  if (!carteira) return;
+
+  document.querySelectorAll(".botao-carteira").forEach(b=>b.classList.remove("ativo"));
+  if (botao) botao.classList.add("ativo");
+
+  document.getElementById("indicadorTU").textContent = formatarNumero(carteira.tu);
+  document.getElementById("indicadorTKU").textContent = formatarNumero(carteira.tku);
+  document.getElementById("indicadorCarload").textContent = formatarNumero(carteira.carload);
+
+  document.getElementById("tabelaResumo").innerHTML = `
+    <tr>
+      <td>${carteira.nome}</td>
+      <td>${formatarNumero(carteira.tu)}</td>
+      <td>${formatarNumero(carteira.tku)}</td>
+      <td>${formatarNumero(carteira.carload)}</td>
+    </tr>`;
+
+  const valores = historicoTU[carteira.nome];
+  const maior = Math.max(...valores);
+
+  document.getElementById("graficoMensal").innerHTML = valores.map((valor,i)=>`
+    <div class="coluna-grafico">
+      <div class="barra ${i===valores.length-1?"destaque":""}" style="height:${Math.max(8,valor/maior*125)}px">
+        <span class="valor-barra">${formatarNumero(valor)}</span>
+      </div>
+      <span class="mes-barra">${["3 meses atrás","2 meses atrás","Mês anterior","Atual"][i]}</span>
+    </div>`).join("");
+}
+
+let telaAtual = "indicadores";
+const telas = ["indicadores","mercado","noticias","clima"];
+let temporizadorRotacao = null;
+let indiceRotacao = 0;
+
+function mostrarTela(id,botao) {
+  if (!document.getElementById(id)) return;
+
+  telaAtual = id;
+  indiceRotacao = telas.indexOf(id);
+
+  document.querySelectorAll(".tela").forEach(t=>t.classList.remove("ativa"));
+  document.getElementById(id).classList.add("ativa");
+
+  document.querySelectorAll(".botao-menu").forEach(b=>b.classList.remove("ativo"));
+
+  if (botao) {
+    botao.classList.add("ativo");
+  } else {
+    const botaoCorrespondente = [...document.querySelectorAll(".botao-menu")]
+      .find(b=>b.getAttribute("onclick")?.includes("'" + id + "'"));
+    if (botaoCorrespondente) botaoCorrespondente.classList.add("ativo");
+  }
+}
+
+function proximaTelaAutomatica() {
+  indiceRotacao = (indiceRotacao + 1) % telas.length;
+  mostrarTela(telas[indiceRotacao]);
+}
+
+function atualizarRelogio() {
+  const agora = new Date();
+  document.getElementById("hora").textContent =
+    agora.toLocaleTimeString("pt-BR");
+  document.getElementById("data").textContent =
+    agora.toLocaleDateString("pt-BR", {
+      weekday:"long",day:"2-digit",month:"long",year:"numeric"
+    });
+}
+
+/* PREVISÃO DO TEMPO: 7 CIDADES */
+
+const cidadesClima = [
+  {nome:"Curitiba — PR",lat:-25.4284,lon:-49.2733},
+  {nome:"Londrina — PR",lat:-23.3103,lon:-51.1628},
+  {nome:"Maringá — PR",lat:-23.4205,lon:-51.9333},
+  {nome:"Sarandi — PR",lat:-23.4436,lon:-51.8739},
+  {nome:"Paranaguá — PR",lat:-25.5163,lon:-48.5254},
+  {nome:"São Francisco do Sul — SC",lat:-26.2433,lon:-48.6380},
+  {nome:"Rio Grande — RS",lat:-32.0350,lon:-52.0986}
+];
+
+function descreverTempo(codigo) {
+  const codigos = {
+    0:["Céu limpo","☀️"],
+    1:["Predominantemente limpo","🌤️"],
+    2:["Parcialmente nublado","⛅"],
+    3:["Nublado","☁️"],
+    45:["Neblina","🌫️"],
+    48:["Neblina com geada","🌫️"],
+    51:["Garoa leve","🌦️"],
+    53:["Garoa moderada","🌦️"],
+    55:["Garoa intensa","🌧️"],
+    56:["Garoa congelante leve","🌧️"],
+    57:["Garoa congelante intensa","🌧️"],
+    61:["Chuva leve","🌦️"],
+    63:["Chuva moderada","🌧️"],
+    65:["Chuva forte","🌧️"],
+    66:["Chuva congelante leve","🌧️"],
+    67:["Chuva congelante forte","🌧️"],
+    71:["Neve leve","🌨️"],
+    73:["Neve moderada","🌨️"],
+    75:["Neve forte","❄️"],
+    77:["Grãos de neve","🌨️"],
+    80:["Pancadas de chuva leves","🌦️"],
+    81:["Pancadas de chuva moderadas","🌧️"],
+    82:["Pancadas de chuva fortes","⛈️"],
+    85:["Pancadas de neve leves","🌨️"],
+    86:["Pancadas de neve fortes","❄️"],
+    95:["Trovoadas","⛈️"],
+    96:["Trovoadas com granizo leve","⛈️"],
+    99:["Trovoadas com granizo forte","⛈️"]
+  };
+  return codigos[codigo] || ["Condição não identificada","🌡️"];
+}
+
+function criarCartaoClima(cidade) {
+  return `
+    <article class="cartao-clima">
+      <div class="clima-cidade">${cidade.nome}</div>
+      <div class="clima-principal">
+        <div>
+          <div class="clima-temperatura" id="temp-${cidade.id}">--°C</div>
+          <div class="clima-condicao" id="cond-${cidade.id}">Carregando...</div>
+        </div>
+        <div class="clima-icone" id="icone-${cidade.id}">🌡️</div>
+      </div>
+      <div class="clima-minmax" id="minmax-${cidade.id}">Máx. --° / Mín. --°</div>
+      <div class="clima-detalhes">
+        <div><span>Sensação térmica</span><strong id="sens-${cidade.id}">--°C</strong></div>
+        <div><span>Chance de chuva</span><strong id="chuva-${cidade.id}">--%</strong></div>
+        <div><span>Umidade</span><strong id="umid-${cidade.id}">--%</strong></div>
+        <div><span>Vento</span><strong id="vento-${cidade.id}">-- km/h</strong></div>
+      </div>
+    </article>`;
+}
+
+async function carregarClimaCidade(cidade) {
+  const url = "https://api.open-meteo.com/v1/forecast" +
+    `?latitude=${cidade.lat}&longitude=${cidade.lon}` +
+    "&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m" +
+    "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max" +
+    "&forecast_days=1&timezone=America%2FSao_Paulo";
+
+  try {
+    const resposta = await fetch(url);
+    if (!resposta.ok) throw new Error("Não foi possível consultar o clima");
+    const dados = await resposta.json();
+    const atual = dados.current;
+    const diaria = dados.daily;
+    const [descricao,icone] = descreverTempo(atual.weather_code);
+
+    document.getElementById(`temp-${cidade.id}`).textContent =
+      `${Math.round(atual.temperature_2m)}°C`;
+    document.getElementById(`cond-${cidade.id}`).textContent = descricao;
+    document.getElementById(`icone-${cidade.id}`).textContent = icone;
+    document.getElementById(`minmax-${cidade.id}`).textContent =
+      `Máx. ${Math.round(diaria.temperature_2m_max[0])}°C / Mín. ${Math.round(diaria.temperature_2m_min[0])}°C`;
+    document.getElementById(`sens-${cidade.id}`).textContent =
+      `${Math.round(atual.apparent_temperature)}°C`;
+    document.getElementById(`chuva-${cidade.id}`).textContent =
+      `${diaria.precipitation_probability_max[0] ?? 0}%`;
+    document.getElementById(`umid-${cidade.id}`).textContent =
+      `${atual.relative_humidity_2m}%`;
+    document.getElementById(`vento-${cidade.id}`).textContent =
+      `${Math.round(atual.wind_speed_10m)} km/h`;
+
+    return true;
+  } catch (erro) {
+    document.getElementById(`cond-${cidade.id}`).textContent = "Clima indisponível";
+    document.getElementById("statusClima").textContent =
+      "Não foi possível atualizar algumas cidades. Verifique a conexão com a internet.";
+    return false;
+  }
+}
+
+async function atualizarClima() {
+  document.getElementById("statusClima").textContent =
+    "Atualizando condições meteorológicas...";
+
+  const resultados = await Promise.all(
+    cidadesClima.map(cidade=>carregarClimaCidade(cidade))
+  );
+
+  const agora = new Date().toLocaleTimeString("pt-BR");
+  const sucessos = resultados.filter(Boolean).length;
+
+  document.getElementById("statusClima").textContent =
+    `${sucessos} de ${cidadesClima.length} cidades atualizadas às ${agora}. Próxima atualização em 15 minutos.`;
+}
+
+cidadesClima.forEach((cidade,indice)=>{
+  cidade.id = "cidade" + indice;
+});
+
+document.getElementById("gradeClima").innerHTML =
+  cidadesClima.map(criarCartaoClima).join("");
+
+atualizarRelogio();
+setInterval(atualizarRelogio,1000);
+
+selecionarCarteira(0,document.querySelector(".botao-carteira"));
+atualizarClima();
+setInterval(atualizarClima,15*60*1000);
+
+setInterval(proximaTelaAutomatica,20*1000);
+</script>
+</body>
+</html>
