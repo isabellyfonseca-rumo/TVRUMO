@@ -1,0 +1,1236 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Comercial | Rumo</title>
+
+    <style>
+        :root {
+            --azul: #082b4c;
+            --azul-claro: #124c78;
+            --fundo: #eef3f8;
+            --dourado: #f5b900;
+            --branco: #ffffff;
+            --texto: #243447;
+            --cinza: #6c7a89;
+            --borda: #dce4ec;
+            --verde: #16835c;
+            --vermelho: #c74747;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            min-height: 100%;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--fundo);
+            color: var(--texto);
+            min-height: 100vh;
+        }
+
+        header {
+            background: var(--azul);
+            color: white;
+            padding: 18px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            border-bottom: 5px solid var(--dourado);
+        }
+
+        .marca h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .marca p {
+            color: #d4dfeb;
+            font-size: 14px;
+        }
+
+        .relogio {
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        #hora {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        #data {
+            font-size: 13px;
+            color: #d4dfeb;
+            margin-top: 4px;
+        }
+
+        nav {
+            display: flex;
+            gap: 8px;
+            padding: 12px 32px;
+            background: white;
+            border-bottom: 1px solid var(--borda);
+            flex-wrap: wrap;
+        }
+
+        .botao-menu {
+            background: transparent;
+            color: var(--azul);
+            border: 1px solid var(--borda);
+            padding: 10px 17px;
+            border-radius: 7px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .botao-menu:hover,
+        .botao-menu.ativo {
+            background: var(--azul);
+            color: white;
+            border-color: var(--azul);
+        }
+
+        main {
+            width: 100%;
+            max-width: none;
+            padding: 22px 32px 28px;
+        }
+
+        .tela {
+            display: none;
+        }
+
+        .tela.ativa {
+            display: block;
+            animation: aparecer 0.3s ease;
+        }
+
+        @keyframes aparecer {
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .cabecalho-tela {
+            margin-bottom: 18px;
+        }
+
+        .cabecalho-tela h2 {
+            color: var(--azul);
+            font-size: 29px;
+            margin-bottom: 6px;
+        }
+
+        .subtitulo {
+            color: var(--cinza);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .aviso-teste {
+            display: inline-block;
+            margin-top: 10px;
+            background: #fff0c7;
+            color: #805b00;
+            border: 1px solid #f2d37c;
+            border-radius: 5px;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .painel {
+            background: white;
+            border: 1px solid var(--borda);
+            border-radius: 11px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(8, 43, 76, 0.04);
+        }
+
+        .painel h2,
+        .painel h3 {
+            color: var(--azul);
+            margin-bottom: 9px;
+        }
+
+        .painel h2 {
+            font-size: 19px;
+        }
+
+        .painel h3 {
+            font-size: 16px;
+        }
+
+        /* BOTÕES DAS CARTEIRAS */
+
+        .botoes-carteira {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 17px 0 20px;
+        }
+
+        .botao-carteira {
+            flex: 1 1 130px;
+            min-height: 44px;
+            background: white;
+            color: var(--azul);
+            border: 1px solid #ccd9e6;
+            border-radius: 7px;
+            padding: 11px 14px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .botao-carteira:hover {
+            background: #dce9f5;
+        }
+
+        .botao-carteira.ativo {
+            background: var(--azul);
+            color: white;
+            border-color: var(--azul);
+            box-shadow: inset 0 -3px 0 var(--dourado);
+        }
+
+        /* CARTÕES DOS INDICADORES */
+
+        .grade-indicadores {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .cartao-indicador {
+            position: relative;
+            overflow: hidden;
+            background: white;
+            padding: 25px;
+            border: 1px solid var(--borda);
+            border-radius: 11px;
+            box-shadow: 0 3px 10px rgba(8, 43, 76, 0.04);
+        }
+
+        .cartao-indicador::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--dourado);
+        }
+
+        .indicador-nome {
+            color: var(--cinza);
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 0.8px;
+        }
+
+        .indicador-valor {
+            color: var(--azul);
+            font-size: clamp(30px, 3vw, 46px);
+            font-weight: bold;
+            margin: 12px 0 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .indicador-descricao {
+            color: var(--cinza);
+            font-size: 12px;
+        }
+
+        /* TABELA INDIVIDUAL DA CARTEIRA */
+
+        .grade-detalhes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .tabela-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 250px;
+        }
+
+        th {
+            background: var(--azul);
+            color: white;
+            text-align: left;
+            padding: 13px;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 14px 13px;
+            border-bottom: 1px solid var(--borda);
+            font-size: 14px;
+        }
+
+        /* GRÁFICO */
+
+        .grafico {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            gap: 12px;
+            height: 205px;
+            padding: 22px 5px 0;
+            border-bottom: 1px solid var(--borda);
+            margin-top: 15px;
+        }
+
+        .coluna-grafico {
+            flex: 1;
+            max-width: 90px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .barra {
+            width: 70%;
+            min-height: 8px;
+            background: var(--azul-claro);
+            border-radius: 5px 5px 0 0;
+            position: relative;
+            transition: height 0.3s;
+        }
+
+        .barra.destaque {
+            background: var(--dourado);
+        }
+
+        .valor-barra {
+            position: absolute;
+            top: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            font-weight: bold;
+            color: var(--azul);
+            white-space: nowrap;
+        }
+
+        .mes-barra {
+            font-size: 11px;
+            color: var(--cinza);
+            padding-bottom: 8px;
+        }
+
+        .nota {
+            color: var(--cinza);
+            font-size: 11px;
+            line-height: 1.5;
+            margin-top: 13px;
+        }
+
+        /* MERCADO */
+
+        .grade-mercado {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .cartao-mercado {
+            background: white;
+            padding: 22px;
+            border-radius: 11px;
+            border: 1px solid var(--borda);
+            border-top: 4px solid var(--dourado);
+            min-height: 160px;
+        }
+
+        .cartao-mercado h3 {
+            color: var(--azul);
+            font-size: 17px;
+            margin-bottom: 10px;
+        }
+
+        .cartao-mercado p {
+            color: var(--cinza);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .etiqueta {
+            display: inline-block;
+            margin-top: 12px;
+            background: #e8f0f7;
+            color: var(--azul);
+            padding: 6px 9px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .lista-resumo {
+            list-style: none;
+            margin-top: 12px;
+        }
+
+        .lista-resumo li {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--borda);
+            font-size: 14px;
+        }
+
+        .lista-resumo li:last-child {
+            border-bottom: none;
+        }
+
+        .lista-resumo strong {
+            color: var(--azul);
+            text-align: right;
+        }
+
+        /* NOTÍCIAS E ANIVERSARIANTES */
+
+        .grade-noticias {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 20px;
+        }
+
+        .lista-noticias {
+            list-style: none;
+        }
+
+        .lista-noticias li {
+            padding: 17px 0;
+            border-bottom: 1px solid var(--borda);
+        }
+
+        .lista-noticias li:last-child {
+            border-bottom: none;
+        }
+
+        .lista-noticias strong {
+            display: block;
+            color: var(--azul);
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+
+        .lista-noticias p {
+            color: var(--cinza);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .aniversariante {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--borda);
+        }
+
+        .aniversariante:last-child {
+            border-bottom: none;
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--azul);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .aniversariante strong {
+            display: block;
+            color: var(--azul);
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .aniversariante span {
+            color: var(--cinza);
+            font-size: 12px;
+        }
+
+        footer {
+            padding: 15px 25px;
+            background: var(--azul);
+            color: #d4dfeb;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        @media (min-width: 1200px) {
+            main {
+                padding: 22px 36px 26px;
+            }
+
+            .cartao-indicador {
+                padding: 28px;
+            }
+
+            .botao-carteira {
+                font-size: 16px;
+                padding: 13px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            header {
+                padding: 17px 20px;
+            }
+
+            nav {
+                padding: 12px 20px;
+            }
+
+            main {
+                padding: 20px;
+            }
+
+            .grade-detalhes,
+            .grade-noticias {
+                grid-template-columns: 1fr;
+            }
+
+            .grade-mercado {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 600px) {
+            header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .relogio {
+                text-align: left;
+            }
+
+            .grade-indicadores,
+            .grade-mercado {
+                grid-template-columns: 1fr;
+            }
+
+            .marca h1 {
+                font-size: 23px;
+            }
+
+            .cabecalho-tela h2 {
+                font-size: 24px;
+            }
+
+            .painel {
+                padding: 16px;
+            }
+        }
+
+        /* TV EM TELA CHEIA */
+        @media (min-width: 1200px) and (min-height: 700px) {
+            .cabecalho-tela {
+                margin-bottom: 14px;
+            }
+
+            .grade-indicadores {
+                gap: 22px;
+            }
+
+            .grade-detalhes {
+                gap: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="marca">
+            <h1>Painel Comercial</h1>
+            <p>Rumo Logística • Indicadores • Mercado</p>
+        </div>
+
+        <div class="relogio">
+            <div id="hora">--:--:--</div>
+            <div id="data">Carregando data...</div>
+        </div>
+    </header>
+
+    <nav>
+        <button class="botao-menu ativo"
+                onclick="mostrarTela('indicadores', this)">
+            Indicadores
+        </button>
+
+        <button class="botao-menu"
+                onclick="mostrarTela('mercado', this)">
+            Mercado
+        </button>
+
+        <button class="botao-menu"
+                onclick="mostrarTela('noticias', this)">
+            Notícias e aniversariantes
+        </button>
+    </nav>
+
+    <main>
+
+        <!-- TELA DE INDICADORES -->
+
+        <section id="indicadores" class="tela ativa">
+
+            <div class="cabecalho-tela">
+                <h2>Indicadores por carteira</h2>
+                <p class="subtitulo">
+                    Acompanhamento dos indicadores comerciais.
+                </p>
+
+                <span class="aviso-teste">
+                    DADOS DE TESTE — SUBSTITUIR PELOS DADOS REAIS
+                </span>
+            </div>
+
+            <!-- SELEÇÃO DAS CARTEIRAS -->
+
+            <div class="botoes-carteira">
+                <button class="botao-carteira ativo"
+                        onclick="selecionarCarteira(0)">
+                    Cimento
+                </button>
+
+                <button class="botao-carteira"
+                        onclick="selecionarCarteira(1)">
+                    Fertilizantes
+                </button>
+
+                <button class="botao-carteira"
+                        onclick="selecionarCarteira(2)">
+                    Grãos
+                </button>
+
+                <button class="botao-carteira"
+                        onclick="selecionarCarteira(3)">
+                    Açúcar
+                </button>
+
+                <button class="botao-carteira"
+                        onclick="selecionarCarteira(4)">
+                    Líquidos
+                </button>
+
+                <button class="botao-carteira"
+                        onclick="selecionarCarteira(5)">
+                    Celulose
+                </button>
+            </div>
+
+            <!-- INDICADORES DA CARTEIRA ATUAL -->
+
+            <div class="grade-indicadores">
+
+                <div class="cartao-indicador">
+                    <div class="indicador-nome">TU</div>
+                    <div class="indicador-valor" id="valorTU">1.250</div>
+                    <div class="indicador-descricao">
+                        Toneladas úteis
+                    </div>
+                </div>
+
+                <div class="cartao-indicador">
+                    <div class="indicador-nome">TKU</div>
+                    <div class="indicador-valor" id="valorTKU">845.000</div>
+                    <div class="indicador-descricao">
+                        Toneladas úteis por quilômetro
+                    </div>
+                </div>
+
+                <div class="cartao-indicador">
+                    <div class="indicador-nome">Carload</div>
+                    <div class="indicador-valor" id="valorCarload">980</div>
+                    <div class="indicador-descricao">
+                        Indicador de volume ferroviário
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- TABELA INDIVIDUAL -->
+
+            <div class="painel">
+                <h2 id="tituloTabela">Indicadores de Cimento</h2>
+
+                <p class="subtitulo" id="subtituloTabela">
+                    Detalhamento da carteira selecionada.
+                </p>
+
+                <div class="tabela-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Indicador</th>
+                                <th>Resultado</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tabelaCarteira">
+                            <!-- O JavaScript preenche esta tabela -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <p class="nota">
+                    Dados fictícios para demonstração. Os resultados
+                    reais precisam ser inseridos ou conectados à fonte oficial.
+                </p>
+            </div>
+
+            <!-- GRÁFICO E RESUMO DA CARTEIRA -->
+
+            <div class="grade-detalhes">
+
+                <div class="painel">
+                    <h2 id="tituloGrafico">Volume mensal — Cimento</h2>
+                    <p class="subtitulo">
+                        Exemplo ilustrativo de carregamento mensal.
+                    </p>
+
+                    <div class="grafico" id="graficoMensal">
+
+                        <div class="coluna-grafico">
+                            <div class="barra" style="height: 48%;">
+                                <span class="valor-barra">3.200</span>
+                            </div>
+                            <span class="mes-barra">Jan</span>
+                        </div>
+
+                        <div class="coluna-grafico">
+                            <div class="barra" style="height: 57%;">
+                                <span class="valor-barra">3.800</span>
+                            </div>
+                            <span class="mes-barra">Fev</span>
+                        </div>
+
+                        <div class="coluna-grafico">
+                            <div class="barra" style="height: 66%;">
+                                <span class="valor-barra">4.100</span>
+                            </div>
+                            <span class="mes-barra">Mar</span>
+                        </div>
+
+                        <div class="coluna-grafico">
+                            <div class="barra" style="height: 59%;">
+                                <span class="valor-barra">3.900</span>
+                            </div>
+                            <span class="mes-barra">Abr</span>
+                        </div>
+
+                        <div class="coluna-grafico">
+                            <div class="barra" style="height: 73%;">
+                                <span class="valor-barra">4.442</span>
+                            </div>
+                            <span class="mes-barra">Mai</span>
+                        </div>
+
+                        <div class="coluna-grafico">
+                            <div class="barra destaque" style="height: 90%;">
+                                <span class="valor-barra">5.448</span>
+                            </div>
+                            <span class="mes-barra">Jun</span>
+                        </div>
+
+                    </div>
+
+                    <p class="nota">
+                        Gráfico de demonstração; os valores não são dados oficiais.
+                    </p>
+                </div>
+
+                <div class="painel">
+                    <h2>Resumo da carteira</h2>
+                    <p class="subtitulo" id="resumoCarteira">
+                        Indicadores da carteira selecionada.
+                    </p>
+
+                    <ul class="lista-resumo">
+                        <li>
+                            <span>Carteira selecionada</span>
+                            <strong id="resumoNome">Cimento</strong>
+                        </li>
+
+                        <li>
+                            <span>Indicador TU</span>
+                            <strong id="resumoTU">1.250</strong>
+                        </li>
+
+                        <li>
+                            <span>Indicador TKU</span>
+                            <strong id="resumoTKU">845.000</strong>
+                        </li>
+
+                        <li>
+                            <span>Indicador Carload</span>
+                            <strong id="resumoCarload">980</strong>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- TELA DE MERCADO -->
+
+        <section id="mercado" class="tela">
+
+            <div class="cabecalho-tela">
+                <h2>Mercado</h2>
+                <p class="subtitulo">
+                    Acompanhamento das carteiras comerciais.
+                </p>
+
+                <span class="aviso-teste">
+                    CONTEÚDO DEMONSTRATIVO
+                </span>
+            </div>
+
+            <div class="grade-mercado">
+
+                <div class="cartao-mercado">
+                    <h3>Cimento</h3>
+                    <p>
+                        Espaço para notícias do setor, informações de clientes
+                        e oportunidades comerciais.
+                    </p>
+                    <span class="etiqueta">Mercado</span>
+                </div>
+
+                <div class="cartao-mercado">
+                    <h3>Fertilizantes</h3>
+                    <p>
+                        Espaço para atualizações de demanda, movimentação
+                        do setor e informações comerciais.
+                    </p>
+                    <span class="etiqueta">Mercado</span>
+                </div>
+
+                <div class="cartao-mercado">
+                    <h3>Grãos</h3>
+                    <p>
+                        Espaço para notícias de safra, demanda logística
+                        e movimentação do mercado.
+                    </p>
+                    <span class="etiqueta">Mercado</span>
+                </div>
+
+                <div class="cartao-mercado">
+                    <h3>Açúcar</h3>
+                    <p>
+                        Espaço para atualizações do setor, carregamento
+                        e oportunidades da carteira.
+                    </p>
+                    <span class="etiqueta">Mercado</span>
+                </div>
+
+                <div class="cartao-mercado">
+                    <h3>Líquidos</h3>
+                    <p>
+                        Espaço para informações de demanda, clientes
+                        e movimentação comercial.
+                    </p>
+                    <span class="etiqueta">Mercado</span>
+                </div>
+
+                <div class="cartao-mercado">
+                    <h3>Celulose</h3>
+                    <p>
+                        Espaço para notícias do setor, demanda logística
+                        e atualizações da carteira.
+                    </p>
+                    <span class="etiqueta">Mercado</span>
+                </div>
+
+            </div>
+
+            <div class="painel" style="margin-top: 20px;">
+                <h2>Atualizações comerciais</h2>
+
+                <ul class="lista-resumo">
+                    <li>
+                        <span>Notícias do mercado</span>
+                        <strong>Adicionar atualização</strong>
+                    </li>
+
+                    <li>
+                        <span>Oportunidades comerciais</span>
+                        <strong>Adicionar atualização</strong>
+                    </li>
+
+                    <li>
+                        <span>Informações operacionais</span>
+                        <strong>Adicionar atualização</strong>
+                    </li>
+                </ul>
+            </div>
+
+        </section>
+
+        <!-- TELA DE NOTÍCIAS E ANIVERSARIANTES -->
+
+        <section id="noticias" class="tela">
+
+            <div class="cabecalho-tela">
+                <h2>Notícias e aniversariantes</h2>
+                <p class="subtitulo">
+                    Espaço de comunicação interna da equipe.
+                </p>
+            </div>
+
+            <div class="grade-noticias">
+
+                <div class="painel">
+                    <h2>Notícias e comunicados</h2>
+
+                    <ul class="lista-noticias">
+                        <li>
+                            <strong>Comunicados comerciais</strong>
+                            <p>
+                                Insira comunicados, reuniões e orientações
+                                importantes para a equipe.
+                            </p>
+                        </li>
+
+                        <li>
+                            <strong>Resultados e indicadores</strong>
+                            <p>
+                                Insira atualizações de resultados, metas
+                                e evolução dos indicadores.
+                            </p>
+                        </li>
+
+                        <li>
+                            <strong>Novidades operacionais</strong>
+                            <p>
+                                Adicione informações operacionais relevantes
+                                para o acompanhamento comercial.
+                            </p>
+                        </li>
+
+                        <li>
+                            <strong>Avisos da equipe</strong>
+                            <p>
+                                Utilize este espaço para lembretes e avisos.
+                            </p>
+                        </li>
+                    </ul>
+
+                    <p class="nota">
+                        Substitua os exemplos por comunicados autorizados
+                        para divulgação interna.
+                    </p>
+                </div>
+
+                <div class="painel">
+                    <h2>Aniversariantes</h2>
+                    <p class="subtitulo">
+                        Espaço para celebrar os aniversários da equipe.
+                    </p>
+
+                    <div class="aniversariante">
+                        <div class="avatar">🎂</div>
+                        <div>
+                            <strong>Nome do colaborador</strong>
+                            <span>Inserir data do aniversário</span>
+                        </div>
+                    </div>
+
+                    <div class="aniversariante">
+                        <div class="avatar">🎉</div>
+                        <div>
+                            <strong>Nome do colaborador</strong>
+                            <span>Inserir data do aniversário</span>
+                        </div>
+                    </div>
+
+                    <div class="aniversariante">
+                        <div class="avatar">🎈</div>
+                        <div>
+                            <strong>Nome do colaborador</strong>
+                            <span>Inserir data do aniversário</span>
+                        </div>
+                    </div>
+
+                    <p class="nota">
+                        Os nomes e as datas são exemplos.
+                    </p>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+        Painel Comercial • Rumo Logística • Projeto demonstrativo
+    </footer>
+
+    <script>
+        /*
+         * DADOS FICTÍCIOS PARA TESTE.
+         * Substituir pelos dados oficiais quando a fonte estiver integrada.
+         */
+
+        const dadosCarteiras = [
+            {
+                carteira: "Cimento",
+                TU: 1250,
+                TKU: 845000,
+                Carload: 980,
+                mensal: [3200, 3800, 4100, 3900, 4442, 5448]
+            },
+            {
+                carteira: "Fertilizantes",
+                TU: 1800,
+                TKU: 920000,
+                Carload: 1100,
+                mensal: [2800, 3400, 3600, 4200, 4600, 5100]
+            },
+            {
+                carteira: "Grãos",
+                TU: 2200,
+                TKU: 1200000,
+                Carload: 1500,
+                mensal: [3500, 4100, 4500, 4800, 5200, 5900]
+            },
+            {
+                carteira: "Açúcar",
+                TU: 1650,
+                TKU: 780000,
+                Carload: 890,
+                mensal: [2900, 3300, 3700, 3900, 4200, 4700]
+            },
+            {
+                carteira: "Líquidos",
+                TU: 950,
+                TKU: 430000,
+                Carload: 620,
+                mensal: [1800, 2100, 2300, 2500, 2700, 3000]
+            },
+            {
+                carteira: "Celulose",
+                TU: 1400,
+                TKU: 690000,
+                Carload: 750,
+                mensal: [2400, 2800, 3100, 3300, 3700, 4000]
+            }
+        ];
+
+        const nomesMeses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"];
+
+        let indiceCarteiraAtual = 0;
+        let telaAtual = "indicadores";
+        let temporizadorPainel = null;
+
+        const TEMPO_CARTEIRA = 10000;
+        const TEMPO_PAGINA = 20000;
+
+        function formatarNumero(valor) {
+            return Number(valor).toLocaleString("pt-BR");
+        }
+
+        function atualizarGrafico(dados) {
+            const grafico = document.getElementById("graficoMensal");
+            const maiorValor = Math.max(...dados.mensal, 1);
+
+            grafico.innerHTML = dados.mensal.map(function(valor, indice) {
+                const altura = Math.max(8, (valor / maiorValor) * 85);
+
+                return `
+                    <div class="coluna-grafico">
+                        <div class="barra ${indice === dados.mensal.length - 1 ? "destaque" : ""}"
+                             style="height:${altura}%;">
+                            <span class="valor-barra">${formatarNumero(valor)}</span>
+                        </div>
+                        <span class="mes-barra">${nomesMeses[indice]}</span>
+                    </div>
+                `;
+            }).join("");
+
+            document.getElementById("tituloGrafico").textContent =
+                "Volume mensal — " + dados.carteira;
+        }
+
+        function filtrarCarteira(indice) {
+            if (indice !== undefined) {
+                indiceCarteiraAtual = indice;
+            }
+
+            const dados = dadosCarteiras[indiceCarteiraAtual];
+
+            document.getElementById("valorTU").textContent =
+                formatarNumero(dados.TU);
+
+            document.getElementById("valorTKU").textContent =
+                formatarNumero(dados.TKU);
+
+            document.getElementById("valorCarload").textContent =
+                formatarNumero(dados.Carload);
+
+            document.getElementById("tituloTabela").textContent =
+                "Indicadores de " + dados.carteira;
+
+            document.getElementById("subtituloTabela").textContent =
+                "Detalhamento exclusivo da carteira selecionada.";
+
+            document.getElementById("tabelaCarteira").innerHTML = `
+                <tr>
+                    <td>Carteira</td>
+                    <td>${dados.carteira}</td>
+                </tr>
+                <tr>
+                    <td>Toneladas úteis (TU)</td>
+                    <td>${formatarNumero(dados.TU)}</td>
+                </tr>
+                <tr>
+                    <td>Toneladas úteis por quilômetro (TKU)</td>
+                    <td>${formatarNumero(dados.TKU)}</td>
+                </tr>
+                <tr>
+                    <td>Carload</td>
+                    <td>${formatarNumero(dados.Carload)}</td>
+                </tr>
+            `;
+
+            document.getElementById("resumoNome").textContent = dados.carteira;
+            document.getElementById("resumoTU").textContent = formatarNumero(dados.TU);
+            document.getElementById("resumoTKU").textContent = formatarNumero(dados.TKU);
+            document.getElementById("resumoCarload").textContent = formatarNumero(dados.Carload);
+
+            document.querySelectorAll(".botao-carteira").forEach(function(botao, indice) {
+                botao.classList.toggle("ativo", indice === indiceCarteiraAtual);
+            });
+
+            atualizarGrafico(dados);
+        }
+
+        function selecionarCarteira(indice) {
+            filtrarCarteira(indice);
+
+            if (telaAtual !== "indicadores") {
+                const botoesMenu = document.querySelectorAll(".botao-menu");
+                mostrarTela("indicadores", botoesMenu[0]);
+            } else {
+                agendarProximaEtapa();
+            }
+        }
+
+        function mostrarTela(idTela, botaoClicado) {
+            telaAtual = idTela;
+
+            document.querySelectorAll(".tela").forEach(function(tela) {
+                tela.classList.toggle("ativa", tela.id === idTela);
+            });
+
+            document.querySelectorAll(".botao-menu").forEach(function(botao) {
+                botao.classList.remove("ativo");
+            });
+
+            if (botaoClicado) {
+                botaoClicado.classList.add("ativo");
+            }
+
+            agendarProximaEtapa();
+        }
+
+        function agendarProximaEtapa() {
+            clearTimeout(temporizadorPainel);
+
+            const tempo = telaAtual === "indicadores"
+                ? TEMPO_CARTEIRA
+                : TEMPO_PAGINA;
+
+            temporizadorPainel = setTimeout(avancarPainel, tempo);
+        }
+
+        function avancarPainel() {
+            const botoesMenu = document.querySelectorAll(".botao-menu");
+
+            if (telaAtual === "indicadores") {
+                if (indiceCarteiraAtual < dadosCarteiras.length - 1) {
+                    filtrarCarteira(indiceCarteiraAtual + 1);
+                    agendarProximaEtapa();
+                } else {
+                    mostrarTela("mercado", botoesMenu[1]);
+                }
+            } else if (telaAtual === "mercado") {
+                mostrarTela("noticias", botoesMenu[2]);
+            } else {
+                filtrarCarteira(0);
+                mostrarTela("indicadores", botoesMenu[0]);
+            }
+        }
+
+        function atualizarRelogio() {
+            const agora = new Date();
+
+            document.getElementById("hora").textContent =
+                agora.toLocaleTimeString("pt-BR");
+
+            document.getElementById("data").textContent =
+                agora.toLocaleDateString("pt-BR", {
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric"
+                });
+        }
+
+        atualizarRelogio();
+        setInterval(atualizarRelogio, 1000);
+
+        filtrarCarteira(0);
+        mostrarTela("indicadores", document.querySelector(".botao-menu"));
+    </script>
+
+</body>
+</html>
